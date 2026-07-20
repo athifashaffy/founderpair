@@ -499,54 +499,16 @@ git commit -m "feat: create FoundPair responsive visual system"
 
 ---
 
-### Task 7: Optional OpenAI explanation endpoint with deterministic fallback (superseded; not shipped)
+### Task 7: Remote AI explanation endpoint (removed from MVP)
 
-**Files:**
-- Create: `src/services/explanationClient.ts`
-- Create: `src/services/explanationClient.test.ts`
-- Create: `public/api/explain.php`
+The optional proxy was implemented during the first pass, then removed during
+release review because silent profile transmission contradicted the Phase 1
+device-local privacy requirement. The shipped MVP uses deterministic,
+profile-grounded explanations and makes no profile-processing network request.
 
-**Interfaces:**
-- Consumes: `MatchExplanation`, two profiles, and dimension scores.
-- Produces: `getMatchExplanation(input, fallback): Promise<MatchExplanation>`.
-- HTTP contract: `POST /founderpair/api/explain.php` returns validated explanation JSON or a non-2xx response that triggers the local fallback.
-
-- [ ] **Step 1: Write failing client fallback tests**
-
-```ts
-test("returns the deterministic fallback when the endpoint fails", async () => {
-  const fetcher = vi.fn().mockRejectedValue(new Error("offline"));
-  await expect(getMatchExplanation(input, fallback, fetcher)).resolves.toEqual(fallback);
-});
-
-test("rejects an ungrounded endpoint payload and uses fallback", async () => {
-  const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify({ summary: "unsupported" })));
-  await expect(getMatchExplanation(input, fallback, fetcher)).resolves.toEqual(fallback);
-});
-```
-
-- [ ] **Step 2: Verify RED, implement the client, and verify GREEN**
-
-Run: `npm test -- src/services/explanationClient.test.ts`
-
-Expected before implementation: FAIL. The implementation must use a short timeout, validate the complete response shape, and return fallback for any network, status, parsing, or schema failure.
-
-- [ ] **Step 3: Implement the PHP proxy**
-
-Read `OPENAI_API_KEY` from the server environment only. Accept JSON POST bodies under 24 KB, allow only the documented profile/score fields, call the current OpenAI Responses API with a strict JSON instruction, validate that the returned explanation contains 2–3 strengths, one friction string, exactly three questions, and a summary, and return `503` when the key is absent. Never echo upstream errors, prompts, or secrets.
-
-- [ ] **Step 4: Verify PHP syntax and client tests**
-
-Run: `php -l public/api/explain.php && npm test -- src/services/explanationClient.test.ts`
-
-Expected: `No syntax errors detected` and all client tests pass.
-
-- [ ] **Step 5: Commit the optional integration**
-
-```bash
-git add src/services public/api
-git commit -m "feat: add safe OpenAI explanation fallback"
-```
+Any future remote explanation task requires explicit opt-in, data
+minimization, evidence-reference validation, authentication, rate limiting,
+and spend controls before implementation.
 
 ---
 
@@ -572,10 +534,9 @@ Run:
 npm test
 npm run build
 npm run lint
-php -l public/api/explain.php
 ```
 
-Expected: zero test failures, successful TypeScript/Vite build, zero lint errors, and valid PHP syntax.
+Expected: zero test failures, a successful TypeScript/Vite build, and zero lint errors.
 
 - [ ] **Step 3: Verify the production artifact**
 
@@ -583,7 +544,7 @@ Run:
 
 ```bash
 test -f dist/index.html
-test -f dist/api/explain.php
+test ! -e dist/api/explain.php
 rg -q '/founderpair/assets/' dist/index.html
 find dist -type f -size +5M -print
 ```
@@ -592,11 +553,11 @@ Expected: required files exist, asset URLs use the subpath, and the final comman
 
 - [ ] **Step 4: Run browser journey checks**
 
-At desktop and 360px widths, verify landing → profile → results → detail → connect; keyboard navigation; no horizontal overflow; local profile restoration; and fallback behavior with the endpoint unavailable. Inspect console errors after each journey.
+At desktop and 360px widths, verify landing → profile → results → detail → connect; keyboard navigation; no horizontal overflow; completed-profile and in-progress-edit restoration; no profile-processing network request; and honest storage-failure messaging. Inspect console errors after each journey.
 
 - [ ] **Step 5: Update the README and commit production readiness**
 
-Document local development, tests, build output, deployment path, the optional server-side `OPENAI_API_KEY`, and the fact that no real message is sent.
+Document local development, tests, build output, deployment path, the device-local privacy boundary, and the fact that no real message is sent.
 
 ```bash
 git add README.md public/.htaccess

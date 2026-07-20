@@ -10,7 +10,9 @@ type ConnectPanelProps = {
 
 export function ConnectPanel({ seeker, match, onBack }: ConnectPanelProps) {
   const restoredMessage = loadIntroduction(match.profile.id);
-  const [saved, setSaved] = useState(restoredMessage !== null);
+  const [saveState, setSaveState] = useState<"idle" | "saved" | "error">(
+    restoredMessage !== null ? "saved" : "idle",
+  );
   const [message, setMessage] = useState(
     restoredMessage ??
       `Hi ${match.profile.name.split(" ")[0]}, I’m ${seeker.name}. FoundPair highlighted the overlap between your ${match.profile.offers.slice(0, 2).join(" and ")} experience and the ${seeker.industries[0] ?? "company"} product I’m building. I’d love to compare what we each want from a cofounder relationship and see whether a short working session makes sense.`,
@@ -35,7 +37,7 @@ export function ConnectPanel({ seeker, match, onBack }: ConnectPanelProps) {
             value={message}
             onChange={(event) => {
               setMessage(event.target.value);
-              setSaved(false);
+              setSaveState("idle");
             }}
           />
         </label>
@@ -43,15 +45,21 @@ export function ConnectPanel({ seeker, match, onBack }: ConnectPanelProps) {
           className="button button-primary"
           type="button"
           onClick={() => {
-            saveIntroduction(match.profile.id, message);
-            setSaved(true);
+            setSaveState(
+              saveIntroduction(match.profile.id, message) ? "saved" : "error",
+            );
           }}
         >
           Save introduction
         </button>
-        {saved ? (
+        {saveState === "saved" ? (
           <p className="demo-confirmation" role="status">
             Saved on this device — no message was sent.
+          </p>
+        ) : saveState === "error" ? (
+          <p className="save-error" role="status">
+            We could not save on this device. Copy your draft before leaving
+            this page.
           </p>
         ) : (
           <p className="privacy-note">This draft stays on this device.</p>

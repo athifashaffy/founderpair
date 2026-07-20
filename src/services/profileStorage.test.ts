@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import { seeker } from "../domain/testFixtures";
 import {
   clearIntroduction,
@@ -43,7 +43,7 @@ describe("profileStorage", () => {
   });
 
   test("round-trips and clears a saved introduction", () => {
-    saveIntroduction("candidate", "Hello Maya");
+    expect(saveIntroduction("candidate", "Hello Maya")).toBe(true);
 
     expect(loadIntroduction("candidate")).toBe("Hello Maya");
     clearIntroduction("candidate");
@@ -54,6 +54,7 @@ describe("profileStorage", () => {
     const draft = {
       version: 1 as const,
       step: 2 as const,
+      profileId: "current-founder",
       draft: {
         name: "Avery",
         headline: "",
@@ -77,6 +78,17 @@ describe("profileStorage", () => {
     expect(loadProfileDraft()).toEqual(draft);
     clearProfileDraft();
     expect(loadProfileDraft()).toBeNull();
+  });
+
+  test("reports when an introduction cannot be persisted", () => {
+    const setItem = vi
+      .spyOn(Storage.prototype, "setItem")
+      .mockImplementation(() => {
+        throw new DOMException("blocked", "SecurityError");
+      });
+
+    expect(saveIntroduction("candidate", "Hello Maya")).toBe(false);
+    setItem.mockRestore();
   });
 
   test("clears the stored profile", () => {

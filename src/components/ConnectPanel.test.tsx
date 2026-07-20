@@ -39,4 +39,19 @@ describe("ConnectPanel", () => {
     );
     expect(screen.getByText(/saved on this device/i)).toBeInTheDocument();
   });
+
+  test("does not claim success when browser storage rejects the draft", async () => {
+    const setItem = vi
+      .spyOn(Storage.prototype, "setItem")
+      .mockImplementation(() => {
+        throw new DOMException("blocked", "SecurityError");
+      });
+    const user = userEvent.setup();
+    render(<ConnectPanel seeker={seeker} match={match} onBack={vi.fn()} />);
+
+    await user.click(screen.getByRole("button", { name: /save introduction/i }));
+
+    expect(screen.getByText(/could not save/i)).toBeInTheDocument();
+    setItem.mockRestore();
+  });
 });

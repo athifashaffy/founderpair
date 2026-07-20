@@ -51,17 +51,20 @@ export function ProfileWizard({
   onComplete,
 }: ProfileWizardProps) {
   const [restoredDraft] = useState(() =>
-    initialProfile ? null : loadProfileDraft(),
+    loadProfileDraft(),
   );
-  const [step, setStep] = useState<1 | 2>(() => restoredDraft?.step ?? 1);
+  const profileId = initialProfile?.id ?? "current-founder";
+  const matchingDraft =
+    restoredDraft?.profileId === profileId ? restoredDraft : null;
+  const [step, setStep] = useState<1 | 2>(() => matchingDraft?.step ?? 1);
   const [draft, setDraft] = useState(() =>
-    restoredDraft?.draft ?? initialDraft(initialProfile),
+    matchingDraft?.draft ?? initialDraft(initialProfile),
   );
   const [errors, setErrors] = useState<string[]>([]);
 
   useEffect(() => {
-    saveProfileDraft({ version: 1, step, draft });
-  }, [draft, step]);
+    saveProfileDraft({ version: 1, profileId, step, draft });
+  }, [draft, profileId, step]);
 
   function update<Key extends keyof ProfileDraft>(
     key: Key,

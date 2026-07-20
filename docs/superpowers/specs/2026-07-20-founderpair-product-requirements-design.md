@@ -40,8 +40,8 @@ The product will make these decisions:
 - Serve idea-stage and pre-seed founders first.
 - Optimize for serious, long-term cofounder relationships rather than general
   networking, hackathon teams, or freelance collaboration.
-- Use deterministic scoring for ranking and OpenAI for profile structuring and
-  human-readable explanations.
+- Use deterministic scoring, profile structuring, and explanations in the MVP;
+  evaluate opt-in OpenAI assistance only after privacy and abuse controls exist.
 - Show both strengths and potential friction; never present a match as a
   guarantee.
 - Deliver a narrow, end-to-end hackathon MVP before adding a social network or
@@ -155,7 +155,7 @@ profiles.
 ### Approach C: focused, explainable matching assistant — selected
 
 Use a short guided profile, explicit dealbreakers, deterministic weighted
-ranking, and AI-generated explanations grounded in structured profile data.
+ranking, and deterministic explanations grounded in structured profile data.
 
 **Why selected:** It demonstrates a differentiated product loop within the
 hackathon window while preserving clear paths toward a larger platform. It is
@@ -189,7 +189,7 @@ also easier to test and safer to explain than AI-only ranking.
    score band, and two evidence-backed reasons.
 4. **Match detail:** strengths, alignment, likely friction, evidence, and three
    conversation prompts.
-5. **Connect:** an editable AI-assisted introduction and a clear demo-mode
+5. **Connect:** an editable profile-grounded introduction and a clear demo-mode
    confirmation.
 
 ## 8. Profile model
@@ -255,17 +255,16 @@ higher.
 
 ### Step 3: grounded explanation
 
-OpenAI receives only the two structured profiles and the computed dimension
-scores. It returns a fixed schema containing:
+The browser compares the two structured profiles and computed dimension
+scores. A deterministic explanation builder returns:
 
 - Two or three evidence-backed strengths.
 - One potential friction point.
 - Three questions for a first conversation.
 - A short summary of why the match is worth exploring.
 
-The server rejects claims that cannot be traced to profile fields. If
-generation fails, a deterministic template displays the highest-scoring
-dimensions and the most important conflict.
+Every claim is assembled from profile fields, so unsupported claims never
+reach the UI and no profile data leaves the device.
 
 ## 10. Functional requirements
 
@@ -273,11 +272,11 @@ dimensions and the most important conflict.
 |---|---|---:|---|
 | FR-01 | Present a clear landing experience | Must | A new visitor can identify the audience, value, and primary action without signing in. |
 | FR-02 | Create and edit a founder profile | Must | Required fields are validated, saved for the session, and reviewable before matching. |
-| FR-03 | Structure free-text profile input | Must | AI output follows a validated schema and users can correct every extracted attribute. |
+| FR-03 | Structure free-text profile input | Must | Suggested attributes follow deterministic rules and users can correct every extracted attribute. |
 | FR-04 | Apply dealbreaker filters | Must | Ineligible profiles are removed before scoring and no excluded profile appears as a top match. |
 | FR-05 | Rank eligible candidates | Must | The same inputs produce the same ordered results, with at least three results in the seeded demo. |
 | FR-06 | Explain each match | Must | Every detail view shows strengths, evidence, one friction point, and three conversation prompts. |
-| FR-07 | Handle AI failure | Must | Matching still works and a template explanation appears when AI is unavailable or malformed. |
+| FR-07 | Work offline | Must | Matching and explanations complete without a network or model call. |
 | FR-08 | Express interest | Must | The user can generate and edit an introduction; the UI accurately labels the action as demo-only. |
 | FR-09 | Revise matching inputs | Should | Editing profile attributes recalculates and reranks the results. |
 | FR-10 | Protect private profile data | Must | Only fields explicitly marked visible appear on match cards and details. |
@@ -289,15 +288,12 @@ dimensions and the most important conflict.
 
 ### Recommended MVP architecture
 
-- **React web client:** profile flow, results, details, and connect experience.
-- **Node.js API:** input validation, session orchestration, scoring, OpenAI calls,
-  and response shaping.
-- **Server-side JSON fixtures:** seeded candidate profiles used only for the
+- **React web client:** profile flow, validation, scoring, results, details,
+  explanations, and connect experience.
+- **Bundled TypeScript fixtures:** seeded candidate profiles used only for the
   hackathon demo.
 - **Browser local storage:** the current user's in-progress profile and demo
   connection intents; no account or server-side user persistence in Phase 1.
-- **OpenAI API:** structured extraction, grounded explanations, conversation
-  prompts, and editable introductions.
 
 Python and PostgreSQL are unnecessary for the one-day MVP. PostgreSQL becomes
 the system of record when real accounts are introduced in Phase 2. A separate
@@ -310,27 +306,24 @@ offline evaluation or model complexity justifies another service boundary.
 - `eligibility` evaluates hard constraints and returns explicit reason codes.
 - `scoring` is a pure, deterministic function that returns dimension scores and
   an overall band.
-- `explanations` builds grounded prompts, validates structured AI responses,
-  and provides deterministic fallbacks.
+- `explanations` builds deterministic, profile-grounded strengths, friction,
+  and conversation prompts.
 - `connections` records interest and creates an editable introduction without
   pretending to deliver it in the MVP.
 
-These boundaries allow the scoring weights, AI model, database, and future
-messaging provider to change independently.
+These boundaries allow the scoring weights, future opt-in AI layer, database,
+and messaging provider to change independently.
 
 ### Data flow
 
-1. The client stores the in-progress profile locally and submits validated
-   profile input to the API.
-2. The API optionally structures free text and returns attributes for user
-   confirmation.
-3. Confirmed attributes are compared with seeded candidate profiles.
+1. The client stores the in-progress profile locally.
+2. Deterministic rules suggest structured attributes for user confirmation.
+3. Confirmed attributes are compared with bundled seeded candidate profiles.
 4. Eligibility removes candidates with hard conflicts.
 5. Scoring ranks the remaining candidates.
-6. Explanation generation runs for the top candidates and falls back safely on
-   failure.
-7. The API returns match cards and detail payloads; the client does not receive
-   hidden candidate fields.
+6. The deterministic explanation builder runs for eligible candidates.
+7. The client renders match cards and details without transmitting profile
+   content.
 
 ## 12. Error handling and edge cases
 
@@ -338,8 +331,8 @@ messaging provider to change independently.
   identify which user constraints narrowed the pool.
 - If no profile is eligible, let the user relax one constraint at a time; do
   not silently ignore dealbreakers.
-- If OpenAI times out or returns invalid data, use a deterministic explanation
-  and keep results available.
+- If browser storage is unavailable, keep the flow usable and clearly report
+  that a profile or introduction draft could not be persisted.
 - If a user submits vague or contradictory free text, flag the conflicting
   fields for confirmation rather than guessing.
 - If a session is refreshed, restore the in-progress profile from local storage
@@ -352,7 +345,7 @@ messaging provider to change independently.
 
 ### Trust and safety
 
-- Label AI-generated content and allow users to edit it.
+- Label system-generated content and allow users to edit it.
 - Provide report and block controls before opening the product beyond a closed
   test group.
 - Add moderation for profile text and introductions before public launch.
@@ -391,7 +384,7 @@ Track events without recording free-text profile content:
 - `interest_started`
 - `interest_confirmed`
 - `constraint_relaxed`
-- `ai_fallback_used`
+- `draft_save_failed`
 
 ### MVP success criteria
 
@@ -400,7 +393,7 @@ Track events without recording free-text profile content:
 - At least 80% of test sessions return three eligible matches.
 - At least 70% of testers rate one top-three explanation as specific and useful.
 - At least 40% of testers open a match detail and start an introduction.
-- AI or network failure does not prevent the matching demo.
+- The complete matching demo works without a profile-processing network call.
 
 ### Post-hackathon north-star signal
 
@@ -418,9 +411,9 @@ meaningful than profile views, raw match counts, or time spent in the app.
 - Scoring is deterministic, bounded from 0 to 100, and respects documented
   weights.
 - Ranking is stable for ties and changes predictably when a dimension changes.
-- AI schemas reject missing, unsupported, or malformed claims.
-- Fallback explanations work without network access.
-- API responses omit private fields.
+- Explanation tests trace every claim to supported profile fields.
+- Explanations work without network access.
+- Storage validators reject incomplete or malformed persisted data.
 
 ### Required journey tests
 
@@ -428,7 +421,7 @@ meaningful than profile views, raw match counts, or time spent in the app.
   360px-wide viewport sizes.
 - Edit extracted attributes before matching.
 - Relax a constraint after a zero-match result.
-- Simulate an OpenAI timeout and finish the journey using fallbacks.
+- Refresh during a profile edit and restore the versioned local draft.
 - Complete the core flow using only a keyboard.
 
 ### Demo acceptance checklist
@@ -437,7 +430,7 @@ meaningful than profile views, raw match counts, or time spent in the app.
 - The default demo profile returns three distinct matches.
 - Each result has evidence, a friction point, and conversation prompts.
 - One profile edit visibly changes the ranking.
-- AI failure can be demonstrated without breaking the flow.
+- Match selection makes no profile-processing network request.
 - The connect step clearly says whether an introduction was actually delivered.
 
 ## 16. Roadmap
@@ -447,7 +440,7 @@ meaningful than profile views, raw match counts, or time spent in the app.
 - Guided profile and attribute confirmation.
 - Seeded candidate dataset.
 - Hard filters and deterministic ranking.
-- AI-generated grounded explanations with fallbacks.
+- Deterministic, profile-grounded explanations.
 - Match detail, conversation prompts, and demo connection intent.
 - Responsive, keyboard-accessible web experience.
 
@@ -460,6 +453,8 @@ meaningful than profile views, raw match counts, or time spent in the app.
 - Feedback after introductions and first conversations.
 - Admin moderation and a basic quality dashboard.
 - Matching evaluation using anonymized, consented outcome data.
+- Optional AI-assisted explanations only after explicit opt-in, evidence
+  validation, authentication, rate limiting, and spend controls are available.
 
 ### Phase 3: trusted founder network
 
@@ -478,7 +473,7 @@ first conversations or the trust required to reach them.
 | Risk | Impact | Mitigation |
 |---|---|---|
 | Insufficient profile supply | Users receive few relevant candidates | Start with a focused cohort or partner community and show constraint-driven pool size. |
-| AI invents compatibility claims | Loss of trust or harmful recommendations | Ground generation in structured fields, validate schemas, show evidence, and use templates on failure. |
+| Generated text invents compatibility claims | Loss of trust or harmful recommendations | Keep MVP explanations deterministic; require evidence validation before any future remote generation. |
 | Scores imply false certainty | Users over-trust the ranking | Use broad bands, explain dimensions, and include friction plus conversation prompts. |
 | Bias enters ranking | Some founders receive systematically worse exposure | Exclude protected traits, test result distributions, document weights, and add review before learning from outcomes. |
 | Users misrepresent experience or commitment | Low-quality or unsafe introductions | Add verification, reporting, mutual consent, and post-conversation feedback in beta. |

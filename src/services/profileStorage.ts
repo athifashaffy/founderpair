@@ -24,6 +24,7 @@ export type ProfileDraft = {
 
 export type StoredProfileDraft = {
   version: 1;
+  profileId: string;
   step: 1 | 2;
   draft: ProfileDraft;
 };
@@ -108,6 +109,7 @@ export function loadProfileDraft(): StoredProfileDraft | null {
     if (!parsed || typeof parsed !== "object") return null;
     const value = parsed as Partial<StoredProfileDraft>;
     return value.version === 1 &&
+      typeof value.profileId === "string" &&
       (value.step === 1 || value.step === 2) &&
       isProfileDraft(value.draft)
       ? (value as StoredProfileDraft)
@@ -148,14 +150,15 @@ export function loadIntroduction(matchId: string): string | null {
   }
 }
 
-export function saveIntroduction(matchId: string, message: string): void {
+export function saveIntroduction(matchId: string, message: string): boolean {
   try {
     localStorage.setItem(
       `${INTRODUCTION_STORAGE_PREFIX}${matchId}`,
       JSON.stringify({ version: 1, message }),
     );
+    return true;
   } catch {
-    // The draft remains editable when storage is blocked or full.
+    return false;
   }
 }
 

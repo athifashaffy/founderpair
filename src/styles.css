@@ -217,6 +217,7 @@ label small { color: var(--muted); font-size: .72rem; font-weight: 500; line-hei
 .connect-shell .text-button { margin-bottom: 2rem; }
 .connect-shell label { margin: 2rem 0 1.2rem; }
 .demo-confirmation { margin: 1.2rem 0 0; padding: 1rem; border: 1.5px solid var(--ink); border-radius: 12px; background: var(--lime-soft); color: var(--ink) !important; font-weight: 800; }
+.save-error { margin: 1.2rem 0 0; padding: 1rem; border: 1.5px solid var(--ink); border-radius: 12px; background: var(--coral-soft); color: var(--ink) !important; font-weight: 800; }
 .privacy-note { margin-top: 1rem; font-size: .78rem; }
 
 @media (max-width: 1040px) {
