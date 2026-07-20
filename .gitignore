@@ -1,0 +1,8 @@
+.DS_Store
+.worktrees/
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+*.log
