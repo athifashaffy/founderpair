@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import App from "./App";
 
 describe("App", () => {
@@ -15,6 +15,8 @@ describe("App", () => {
   });
 
   test("completes profile setup and opens a recommended match", async () => {
+    const fetchSpy = vi.fn();
+    vi.stubGlobal("fetch", fetchSpy);
     const user = userEvent.setup();
     render(<App />);
 
@@ -27,6 +29,8 @@ describe("App", () => {
       "Full-time engineer building venture-backed climate software",
     );
     await user.click(screen.getByRole("button", { name: /continue/i }));
+    expect(screen.getByLabelText(/time zone/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/where can you work/i)).toBeInTheDocument();
     await user.clear(screen.getByLabelText(/what do you bring/i));
     await user.type(
       screen.getByLabelText(/what do you bring/i),
@@ -51,5 +55,7 @@ describe("App", () => {
     await user.click(viewMatch!);
     expect(screen.getByText(/what could click/i)).toBeInTheDocument();
     expect(screen.getByText(/worth discussing/i)).toBeInTheDocument();
+    expect(fetchSpy).not.toHaveBeenCalled();
+    vi.unstubAllGlobals();
   });
 });

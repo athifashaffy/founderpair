@@ -1,6 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { structureProfileDraft, validateProfile } from "../domain/profile";
 import type { FounderProfile } from "../domain/types";
+import {
+  clearProfileDraft,
+  loadProfileDraft,
+  saveProfileDraft,
+  type ProfileDraft,
+} from "../services/profileStorage";
 
 type ProfileWizardProps = {
   initialProfile: FounderProfile | null;
@@ -8,32 +14,22 @@ type ProfileWizardProps = {
   onComplete: (profile: FounderProfile) => void;
 };
 
-type Draft = {
-  name: string;
-  headline: string;
-  role: string;
-  location: string;
-  bio: string;
-  offers: string;
-  seeks: string;
-  industries: string;
-  values: string;
-  workStyle: string;
-  commitment: FounderProfile["commitment"];
-  startWindow: FounderProfile["startWindow"];
-  fundingPreference: FounderProfile["fundingPreference"];
-};
-
 function asList(value: string) {
   return [...new Set(value.split(",").map((item) => item.trim()).filter(Boolean))];
 }
 
-function initialDraft(profile: FounderProfile | null): Draft {
+function browserTimezone() {
+  return Math.max(-12, Math.min(14, -new Date().getTimezoneOffset() / 60));
+}
+
+function initialDraft(profile: FounderProfile | null): ProfileDraft {
   return {
     name: profile?.name ?? "",
     headline: profile?.headline ?? "",
     role: profile?.role ?? "Technical founder",
     location: profile?.location ?? "Toronto",
+    timezone: profile?.timezone ?? browserTimezone(),
+    remotePreference: profile?.remotePreference ?? "remote",
     bio: profile?.bio ?? "",
     offers: profile?.offers.join(", ") ?? "Engineering, Product",
     seeks: profile?.seeks.join(", ") ?? "Sales, Growth",
@@ -54,11 +50,23 @@ export function ProfileWizard({
   onCancel,
   onComplete,
 }: ProfileWizardProps) {
-  const [step, setStep] = useState<1 | 2>(1);
-  const [draft, setDraft] = useState(() => initialDraft(initialProfile));
+  const [restoredDraft] = useState(() =>
+    initialProfile ? null : loadProfileDraft(),
+  );
+  const [step, setStep] = useState<1 | 2>(() => restoredDraft?.step ?? 1);
+  const [draft, setDraft] = useState(() =>
+    restoredDraft?.draft ?? initialDraft(initialProfile),
+  );
   const [errors, setErrors] = useState<string[]>([]);
 
-  function update<Key extends keyof Draft>(key: Key, value: Draft[Key]) {
+  useEffect(() => {
+    saveProfileDraft({ version: 1, step, draft });
+  }, [draft, step]);
+
+  function update<Key extends keyof ProfileDraft>(
+    key: Key,
+    value: ProfileDraft[Key],
+  ) {
     setDraft((current) => ({ ...current, [key]: value }));
   }
 
@@ -94,8 +102,8 @@ export function ProfileWizard({
       headline: draft.headline.trim() || draft.role,
       role: draft.role,
       location: draft.location.trim() || "Toronto",
-      timezone: -4,
-      remotePreference: "remote",
+      timezone: draft.timezone,
+      remotePreference: draft.remotePreference,
       commitment: draft.commitment,
       startWindow: draft.startWindow,
       offers: asList(draft.offers),
@@ -111,6 +119,7 @@ export function ProfileWizard({
       setErrors(issues.map((issue) => issue.message));
       return;
     }
+    clearProfileDraft();
     onComplete(profile);
   }
 
@@ -216,6 +225,35 @@ export function ProfileWizard({
                 value={draft.industries}
                 onChange={(event) => update("industries", event.target.value)}
               />
+            </label>
+            <label>
+              Time zone (UTC offset)
+              <input
+                type="number"
+                min="-12"
+                max="14"
+                step="0.5"
+                value={draft.timezone}
+                onChange={(event) =>
+                  update("timezone", Number(event.target.value))
+                }
+              />
+            </label>
+            <label>
+              Where can you work?
+              <select
+                value={draft.remotePreference}
+                onChange={(event) =>
+                  update(
+                    "remotePreference",
+                    event.target.value as FounderProfile["remotePreference"],
+                  )
+                }
+              >
+                <option value="remote">Remote</option>
+                <option value="hybrid">Hybrid</option>
+                <option value="local">Same location only</option>
+              </select>
             </label>
             <label>
               Commitment

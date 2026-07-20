@@ -21,7 +21,7 @@ export function MatchDetail({ match, onBack, onConnect }: MatchDetailProps) {
               .join("")}
           </div>
           <div>
-            <p className="eyebrow">{match.band} · {match.scores.overall}/100</p>
+            <p className="eyebrow">{match.band}</p>
             <h1>{match.profile.name}</h1>
             <p>{match.profile.headline}</p>
           </div>
@@ -31,6 +31,18 @@ export function MatchDetail({ match, onBack, onConnect }: MatchDetailProps) {
         </header>
 
         <p className="detail-summary">{match.explanation.summary}</p>
+
+        <details className="score-details detail-score-details">
+          <summary>Show scoring details</summary>
+          <dl>
+            <div><dt>Overall</dt><dd>{match.scores.overall}</dd></div>
+            <div><dt>Skill coverage</dt><dd>{match.scores.complementarity}</dd></div>
+            <div><dt>Values</dt><dd>{match.scores.values}</dd></div>
+            <div><dt>Goals</dt><dd>{match.scores.goals}</dd></div>
+            <div><dt>Work style</dt><dd>{match.scores.workStyle}</dd></div>
+            <div><dt>Logistics</dt><dd>{match.scores.logistics}</dd></div>
+          </dl>
+        </details>
 
         <div className="detail-grid">
           <section className="detail-panel detail-panel-lime">

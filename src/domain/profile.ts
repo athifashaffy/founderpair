@@ -5,7 +5,9 @@ export type ProfileField =
   | "role"
   | "offers"
   | "seeks"
-  | "commitment";
+  | "commitment"
+  | "timezone"
+  | "remotePreference";
 
 export type ValidationIssue = {
   field: ProfileField;
@@ -80,6 +82,23 @@ export function validateProfile(
   }
   if (!profile.commitment) {
     issues.push({ field: "commitment", message: "Choose your commitment level." });
+  }
+  if (
+    typeof profile.timezone !== "number" ||
+    !Number.isFinite(profile.timezone) ||
+    profile.timezone < -12 ||
+    profile.timezone > 14
+  ) {
+    issues.push({
+      field: "timezone",
+      message: "Add a UTC offset between -12 and +14.",
+    });
+  }
+  if (!profile.remotePreference) {
+    issues.push({
+      field: "remotePreference",
+      message: "Choose where you can work with a cofounder.",
+    });
   }
   return issues;
 }

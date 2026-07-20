@@ -16,6 +16,11 @@ skills, values, goals, and working preferences into structured attributes,
 ranks potential cofounders with a transparent compatibility model, and
 explains the strengths and trade-offs of each match.
 
+> **MVP implementation note (July 20, 2026):** the static hackathon build uses
+> deterministic, on-device explanations only. Any future remote AI explanation
+> flow must require explicit opt-in, minimize transmitted fields, validate
+> evidence references, authenticate requests, and enforce rate and spend limits.
+
 The hackathon MVP proves one core hypothesis: a founder is more likely to act
 on a recommendation when the product explains why the relationship could work
 instead of presenting an unexplained compatibility score.

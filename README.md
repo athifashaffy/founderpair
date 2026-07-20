@@ -1,6 +1,6 @@
 # FoundPair
 
-FoundPair is an AI-assisted cofounder matching product for idea-stage and
+FoundPair is an explainable cofounder matching product for idea-stage and
 pre-seed founders. It helps founders discover people with complementary
 skills, compatible values, and aligned working expectations—and explains why
 each introduction may be worth pursuing.
@@ -31,12 +31,11 @@ Requirements:
 
 - Node.js 20.19 or newer
 - npm 10 or newer
-- PHP 8 or newer only when checking the optional OpenAI endpoint
 
 Install and start the app:
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
@@ -49,7 +48,6 @@ Run the verification suite:
 npm test
 npm run build
 npm run lint
-php -l public/api/explain.php
 ```
 
 The production build is written to `dist/` with asset URLs rooted at
@@ -65,22 +63,20 @@ The ranking path does not depend on a model call:
    working style, and logistics.
 3. Candidates scoring at least 50 are ranked deterministically.
 4. Evidence-backed template explanations are always available.
-5. An optional server-side OpenAI call can replace the template explanation
-   when it returns a complete, validated response.
+5. Evidence-backed deterministic explanations keep every claim traceable to
+   the two profiles without sending profile content off-device.
 
-## Optional OpenAI explanations
+## Privacy boundary
 
-`public/api/explain.php` calls the OpenAI Responses API with Structured
-Outputs. The browser never receives the API key.
+The hackathon MVP has no remote profile-processing endpoint. Profile drafts,
+completed profiles, and saved introduction drafts are versioned and stored in
+the browser's local storage. Selecting a match never makes a network request
+with profile data.
 
-Configure these environment variables in the hosting control panel:
-
-- `OPENAI_API_KEY` — required to enable generated explanations
-- `OPENAI_MODEL` — optional; defaults to `gpt-5.6`
-
-When the key is absent, the endpoint returns `503` and the app automatically
-uses its deterministic explanation. Do not add secrets to this repository or
-to browser-delivered JavaScript.
+Generated explanations remain a roadmap item. They require explicit user
+opt-in, data minimization, evidence validation, authentication, rate limits,
+and spend controls before any profile content may leave the device. Do not add
+secrets to this repository or browser-delivered JavaScript.
 
 ## cPanel deployment
 
@@ -102,7 +98,8 @@ for an Apache-based cPanel account.
 ## Demo boundaries
 
 - The candidate cohort is seeded and clearly presented as a hackathon demo.
-- The current profile and introduction draft remain on the device.
+- Profile setup drafts, completed profiles, and introduction drafts remain on
+  the device.
 - Saving an introduction does not send a real message.
 - Generated compatibility text is decision support, not a prediction of
   relationship or company success.

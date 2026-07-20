@@ -24,6 +24,15 @@ describe("checkEligibility", () => {
     ).toEqual({ eligible: false, reasons: ["role-coverage"] });
   });
 
+  test("excludes a candidate whose required skill the seeker cannot cover", () => {
+    expect(
+      checkEligibility(seeker, {
+        ...candidate,
+        seeks: ["Operations"],
+      }),
+    ).toEqual({ eligible: false, reasons: ["role-coverage"] });
+  });
+
   test("collects each hard conflict in stable order", () => {
     expect(
       checkEligibility(seeker, {

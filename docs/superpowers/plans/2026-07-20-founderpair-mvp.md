@@ -4,9 +4,15 @@
 
 **Goal:** Build and deploy a demo-ready FoundPair web app that collects a founder profile, ranks seeded cofounders, explains each match, and creates an editable introduction.
 
-**Architecture:** A static React + TypeScript single-page app owns the profile flow and device-local state. Pure domain modules perform eligibility, scoring, ranking, and deterministic explanations. A small optional PHP endpoint can call OpenAI from cPanel without exposing a key; the client falls back to deterministic explanations whenever that endpoint is unavailable.
+**Architecture:** A static React + TypeScript single-page app owns the profile flow and device-local state. Pure domain modules perform eligibility, scoring, ranking, and deterministic explanations. No profile content leaves the browser in the MVP.
 
-**Tech Stack:** React 19, TypeScript 5, Vite 7, Vitest, Testing Library, CSS, PHP 8-compatible OpenAI proxy, cPanel static hosting
+**Tech Stack:** React 19, TypeScript 6, Vite 8, Vitest, Testing Library, CSS, cPanel static hosting
+
+> **Release amendment:** Task 7's optional remote explanation endpoint was
+> removed after code review because it contradicted the Phase 1 device-local
+> privacy constraint. Remote AI explanations are roadmap-only until they have
+> explicit opt-in, minimized payloads, evidence validation, authentication,
+> rate limiting, and spend controls.
 
 ## Global Constraints
 
@@ -38,7 +44,6 @@
 - `src/domain/ranking.ts`: eligibility, scoring, tie-breaking, and result assembly.
 - `src/domain/profile.ts`: profile validation and keyword-based free-text structuring.
 - `src/data/candidates.ts`: eight or more demo candidates.
-- `src/services/explanationClient.ts`: optional PHP/OpenAI call with fallback.
 - `src/components/Landing.tsx`: hero, product preview, principles, and CTA.
 - `src/components/ProfileWizard.tsx`: compact guided profile flow.
 - `src/components/MatchResults.tsx`: ranked cards and constraint guidance.
@@ -46,7 +51,6 @@
 - `src/components/ConnectPanel.tsx`: editable introduction and honest demo confirmation.
 - `src/test/setup.ts`: DOM test setup.
 - `src/**/*.test.ts(x)`: domain and journey tests.
-- `public/api/explain.php`: server-side OpenAI proxy with strict input/output handling.
 - `public/.htaccess`: subpath and cache behavior for cPanel.
 
 ---
@@ -495,7 +499,7 @@ git commit -m "feat: create FoundPair responsive visual system"
 
 ---
 
-### Task 7: Optional OpenAI explanation endpoint with deterministic fallback
+### Task 7: Optional OpenAI explanation endpoint with deterministic fallback (superseded; not shipped)
 
 **Files:**
 - Create: `src/services/explanationClient.ts`

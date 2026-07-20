@@ -73,7 +73,7 @@ export function buildFallbackExplanation(
   } as const;
 
   return {
-    summary: `${candidate.name} looks worth a conversation because ${candidate.offers[0]} complements your profile and the pair scores ${scores.overall}/100 across the full compatibility model.`,
+    summary: `${candidate.name} looks worth a conversation because ${candidate.offers[0]} complements your profile and several compatibility signals align.`,
     strengths: strengths.slice(0, 3),
     friction: frictionByDimension[lowest ?? "goals"],
     questions: [

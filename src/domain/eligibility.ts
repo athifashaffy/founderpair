@@ -44,7 +44,10 @@ export function checkEligibility(
     reasons.push("location");
   }
 
-  if (!overlaps(seeker.seeks, candidate.offers)) {
+  if (
+    !overlaps(seeker.seeks, candidate.offers) ||
+    !overlaps(candidate.seeks, seeker.offers)
+  ) {
     reasons.push("role-coverage");
   }
 

@@ -21,13 +21,15 @@ describe("structureProfileDraft", () => {
 });
 
 describe("validateProfile", () => {
-  test("requires identity, role, offered skills, sought skills, and commitment", () => {
+  test("requires identity, role, skills, commitment, and logistics", () => {
     expect(validateProfile({}).map((issue) => issue.field)).toEqual([
       "name",
       "role",
       "offers",
       "seeks",
       "commitment",
+      "timezone",
+      "remotePreference",
     ]);
   });
 
@@ -39,7 +41,23 @@ describe("validateProfile", () => {
         offers: ["Engineering"],
         seeks: ["Sales"],
         commitment: "full-time",
+        timezone: -4,
+        remotePreference: "remote",
       }),
     ).toEqual([]);
+  });
+
+  test("rejects an invalid UTC offset", () => {
+    expect(
+      validateProfile({
+        name: "Avery",
+        role: "Technical founder",
+        offers: ["Engineering"],
+        seeks: ["Sales"],
+        commitment: "full-time",
+        timezone: Number.NaN,
+        remotePreference: "remote",
+      }).map((issue) => issue.field),
+    ).toContain("timezone");
   });
 });

@@ -9,7 +9,7 @@
   --ink: #18172a;
   --paper: #f7f3ea;
   --surface: #fffdf8;
-  --indigo: #6c63ff;
+  --indigo: #5146d9;
   --indigo-soft: #dedbff;
   --coral: #ff7a66;
   --coral-soft: #ffd8d0;
@@ -70,7 +70,7 @@ p { line-height: 1.65; }
 .orbit-two { right: 2%; top: 7%; width: 130px; height: 130px; background: var(--coral); }
 .preview-card { border: var(--border); border-radius: 28px; background: var(--surface); box-shadow: 9px 9px 0 var(--ink); }
 .preview-card-main { position: relative; z-index: 1; width: min(100%, 450px); padding: 1.6rem; transform: rotate(1.2deg); }
-.preview-topline, .preview-person, .preview-score-row, .score-line, .match-card-topline { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.preview-topline, .preview-person, .preview-score-row, .match-card-topline { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .mini-logo { display: grid; place-items: center; width: 35px; height: 35px; border: 2px solid var(--ink); border-radius: 10px; background: var(--lime); font-family: "Manrope", sans-serif; font-size: .72rem; font-weight: 800; }
 .score-pill { display: inline-flex; align-items: center; min-height: 30px; padding: .35rem .65rem; border: 1.5px solid var(--ink); border-radius: 999px; background: var(--lime); font-size: .72rem; font-weight: 800; }
 .preview-person { justify-content: flex-start; margin: 1.6rem 0; }
@@ -186,8 +186,13 @@ label small { color: var(--muted); font-size: .72rem; font-weight: 500; line-hei
 .skill-list { display: flex; flex-wrap: wrap; gap: .4rem; margin: .7rem 0 1rem; }
 .skill-list span { padding: .35rem .55rem; border: 1px solid var(--line); border-radius: 8px; background: #f1ede5; font-size: .7rem; font-weight: 700; }
 .match-summary { flex: 1; color: var(--muted); font-size: .82rem; }
-.score-line { margin: 1rem 0; padding-top: 1rem; border-top: 1px solid var(--line); font-size: .8rem; }
-.score-line strong { font-family: "Manrope"; font-size: 1.35rem; }
+.score-details { margin: 1rem 0; padding-top: 1rem; border-top: 1px solid var(--line); font-size: .78rem; }
+.score-details summary { min-height: 38px; font-weight: 800; cursor: pointer; }
+.score-details dl { display: grid; gap: .35rem; margin: .35rem 0 1rem; }
+.score-details dl div { display: flex; justify-content: space-between; gap: 1rem; }
+.score-details dt { color: var(--muted); }
+.score-details dd { margin: 0; font-family: "Manrope"; font-weight: 800; }
+.detail-score-details { max-width: 540px; margin: -1.5rem 0 3rem; padding: 1rem 1.2rem 0; border: 1.5px solid var(--ink); border-radius: 14px; background: var(--surface); }
 .score-promising-fit { background: var(--indigo-soft); }
 .score-worth-exploring { background: var(--coral-soft); }
 .empty-state { max-width: 720px; padding: 3rem; border: var(--border); border-radius: 22px; background: var(--coral-soft); box-shadow: var(--shadow); }

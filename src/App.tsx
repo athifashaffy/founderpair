@@ -8,7 +8,6 @@ import { candidates } from "./data/candidates";
 import { demoProfile } from "./data/demoProfile";
 import { rankCandidates } from "./domain/ranking";
 import type { FounderProfile, MatchResult } from "./domain/types";
-import { getMatchExplanation } from "./services/explanationClient";
 import { loadProfile, saveProfile } from "./services/profileStorage";
 
 type Screen = "landing" | "profile" | "matches" | "detail" | "connect";
@@ -38,17 +37,6 @@ export default function App() {
   function selectMatch(match: MatchResult) {
     setSelectedMatch(match);
     setScreen("detail");
-    if (!profile) return;
-    void getMatchExplanation(
-      { seeker: profile, candidate: match.profile, scores: match.scores },
-      match.explanation,
-    ).then((explanation) => {
-      setSelectedMatch((current) =>
-        current?.profile.id === match.profile.id
-          ? { ...current, explanation }
-          : current,
-      );
-    });
   }
 
   return (

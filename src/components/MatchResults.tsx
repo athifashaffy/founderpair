@@ -70,10 +70,14 @@ export function MatchResults({
                   ))}
                 </div>
                 <p className="match-summary">{match.explanation.summary}</p>
-                <div className="score-line">
-                  <span>Compatibility</span>
-                  <strong>{match.scores.overall}</strong>
-                </div>
+                <details className="score-details">
+                  <summary>Scoring details</summary>
+                  <dl>
+                    <div><dt>Overall</dt><dd>{match.scores.overall}</dd></div>
+                    <div><dt>Skill coverage</dt><dd>{match.scores.complementarity}</dd></div>
+                    <div><dt>Values</dt><dd>{match.scores.values}</dd></div>
+                  </dl>
+                </details>
                 <button className="button button-dark" type="button" onClick={() => onSelect(match)}>
                   View match <span aria-hidden="true">↗</span>
                 </button>

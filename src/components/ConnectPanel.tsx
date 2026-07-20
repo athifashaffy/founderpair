@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { FounderProfile, MatchResult } from "../domain/types";
+import { loadIntroduction, saveIntroduction } from "../services/profileStorage";
 
 type ConnectPanelProps = {
   seeker: FounderProfile;
@@ -8,9 +9,11 @@ type ConnectPanelProps = {
 };
 
 export function ConnectPanel({ seeker, match, onBack }: ConnectPanelProps) {
-  const [saved, setSaved] = useState(false);
+  const restoredMessage = loadIntroduction(match.profile.id);
+  const [saved, setSaved] = useState(restoredMessage !== null);
   const [message, setMessage] = useState(
-    `Hi ${match.profile.name.split(" ")[0]}, I’m ${seeker.name}. FoundPair highlighted the overlap between your ${match.profile.offers.slice(0, 2).join(" and ")} experience and the ${seeker.industries[0] ?? "company"} product I’m building. I’d love to compare what we each want from a cofounder relationship and see whether a short working session makes sense.`,
+    restoredMessage ??
+      `Hi ${match.profile.name.split(" ")[0]}, I’m ${seeker.name}. FoundPair highlighted the overlap between your ${match.profile.offers.slice(0, 2).join(" and ")} experience and the ${seeker.industries[0] ?? "company"} product I’m building. I’d love to compare what we each want from a cofounder relationship and see whether a short working session makes sense.`,
   );
 
   return (
@@ -36,12 +39,19 @@ export function ConnectPanel({ seeker, match, onBack }: ConnectPanelProps) {
             }}
           />
         </label>
-        <button className="button button-primary" type="button" onClick={() => setSaved(true)}>
+        <button
+          className="button button-primary"
+          type="button"
+          onClick={() => {
+            saveIntroduction(match.profile.id, message);
+            setSaved(true);
+          }}
+        >
           Save introduction
         </button>
         {saved ? (
           <p className="demo-confirmation" role="status">
-            Saved for this demo — no message was sent.
+            Saved on this device — no message was sent.
           </p>
         ) : (
           <p className="privacy-note">This draft stays on this device.</p>
