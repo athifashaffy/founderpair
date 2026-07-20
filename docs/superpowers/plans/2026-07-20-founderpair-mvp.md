@@ -572,4 +572,4 @@ Expected: the remote branch is created and points at the verified local HEAD.
 
 - [ ] **Step 7: Deploy and verify**
 
-Upload the contents of `dist/` to `public_html/founderpair/` through the authorized cPanel account. Visit `https://thealphanova.com/founderpair/`, complete the core journey, confirm assets and PHP fallback responses load from the subpath, and inspect the browser console for errors.
+Upload the contents of `dist/` to `public_html/founderpair/` through the authorized cPanel account. Visit `https://thealphanova.com/founderpair/`, complete the core journey, confirm deterministic explanations work without a profile-processing request, confirm assets load from the subpath, and inspect the browser console for errors.
