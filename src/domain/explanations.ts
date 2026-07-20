@@ -53,15 +53,16 @@ export function buildFallbackExplanation(
     );
   }
 
-  const lowest = (
-    [
-      ["complementarity", scores.complementarity],
-      ["values", scores.values],
-      ["goals", scores.goals],
-      ["workStyle", scores.workStyle],
-      ["logistics", scores.logistics],
-    ] as const
-  ).sort((left, right) => left[1] - right[1])[0]?.[0];
+  const dimensions: Array<
+    [Exclude<keyof DimensionScores, "overall">, number]
+  > = [
+    ["complementarity", scores.complementarity],
+    ["values", scores.values],
+    ["goals", scores.goals],
+    ["workStyle", scores.workStyle],
+    ["logistics", scores.logistics],
+  ];
+  const lowest = dimensions.sort((left, right) => left[1] - right[1])[0]?.[0];
 
   const frictionByDimension = {
     complementarity: `Your skill coverage is promising but incomplete; compare ownership boundaries for ${list(seeker.seeks)} before choosing roles.`,
