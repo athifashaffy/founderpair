@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1280, initial-scale=1" />
+    <title>FoundPair gallery compositor</title>
+    <style>
+      :root {
+        font-family: Arial, Helvetica, sans-serif;
+        color: #18172a;
+        background: #f7f3ea;
+        --ink: #18172a;
+        --paper: #f7f3ea;
+        --indigo: #5146d9;
+        --indigo-soft: #dedbff;
+        --coral: #ff7a66;
+        --lime: #c9f36a;
+      }
+      * { box-sizing: border-box; }
+      html, body { width: 1280px; height: 720px; margin: 0; overflow: hidden; }
+      .canvas {
+        position: relative;
+        width: 1280px;
+        height: 720px;
+        overflow: hidden;
+        background: var(--paper);
+      }
+      .accent {
+        position: absolute;
+        top: -96px;
+        right: -58px;
+        width: 270px;
+        height: 270px;
+        border: 5px solid var(--ink);
+        border-radius: 50%;
+        background: var(--accent);
+      }
+      .header { position: relative; z-index: 2; padding: 35px 80px 0; }
+      .eyebrow { display: flex; align-items: center; gap: 14px; font-size: 18px; font-weight: 800; letter-spacing: .04em; }
+      .mark {
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+        border: 4px solid var(--ink);
+        border-radius: 14px;
+        background: var(--indigo);
+        color: white;
+        box-shadow: 4px 4px 0 var(--ink);
+        transform: rotate(-4deg);
+      }
+      h1 { margin: 18px 0 7px; max-width: 990px; font-size: 44px; line-height: .98; letter-spacing: -.045em; }
+      .caption { margin: 0; max-width: 900px; font-size: 21px; font-weight: 700; line-height: 1.3; color: #4d4a60; }
+      .screen {
+        position: absolute;
+        z-index: 2;
+        right: 80px;
+        bottom: 28px;
+        left: 80px;
+        height: 452px;
+        overflow: hidden;
+        border: 5px solid var(--ink);
+        border-radius: 22px;
+        background: white;
+        box-shadow: 10px 10px 0 var(--ink);
+      }
+      .screen img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+      .number {
+        position: absolute;
+        z-index: 4;
+        right: 102px;
+        bottom: 49px;
+        padding: 10px 15px;
+        border: 3px solid var(--ink);
+        border-radius: 14px;
+        background: var(--badge);
+        font-size: 18px;
+        font-weight: 900;
+      }
+    </style>
+  </head>
+  <body>
+    <main id="root"></main>
+    <script>
+      const cards = {
+        '01': {
+          title: 'Explainable matching for serious founders',
+          caption: 'FoundPair turns founder context into transparent recommendations you can understand.',
+          image: 'landing-raw.png',
+          accent: '#ff7a66',
+          badge: '#c9f36a',
+        },
+        '02': {
+          title: 'Start with context, not swipes',
+          caption: 'Skills, needs, values, working style, and logistics shape every result.',
+          image: 'profile-raw.png',
+          accent: '#c9f36a',
+          badge: '#dedbff',
+        },
+        '03': {
+          title: 'Ranked for real compatibility',
+          caption: 'Strong, promising, and exploratory fits—each with reasons you can inspect.',
+          image: 'results-raw.png',
+          accent: '#dedbff',
+          badge: '#ff7a66',
+        },
+        '04': {
+          title: 'See what could click—and what might not',
+          caption: 'Every match surfaces complementary strengths, potential friction, and questions to ask.',
+          image: 'detail-raw.png',
+          accent: '#5146d9',
+          badge: '#c9f36a',
+        },
+      };
+
+      const id = new URLSearchParams(window.location.search).get('card') || '01';
+      const card = cards[id];
+      document.querySelector('#root').innerHTML = `
+        <article class="canvas" style="--accent:${card.accent};--badge:${card.badge}">
+          <span class="accent"></span>
+          <header class="header">
+            <div class="eyebrow"><span class="mark">FP</span> FOUNDERPAIR · PRODUCT TOUR</div>
+            <h1>${card.title}</h1>
+            <p class="caption">${card.caption}</p>
+          </header>
+          <figure class="screen"><img src="../.video-build/captures/${card.image}" alt=""></figure>
+          <span class="number">${id} / 04</span>
+        </article>`;
+      document.title = `FoundPair gallery ${id} ready`;
+    </script>
+  </body>
+</html>

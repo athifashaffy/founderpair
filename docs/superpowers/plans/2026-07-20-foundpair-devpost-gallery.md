@@ -4,7 +4,7 @@
 
 **Goal:** Produce four branded, authentic, Devpost-ready FoundPair gallery PNGs.
 
-**Architecture:** A browser-native HTML compositor combines existing product captures with the FoundPair visual system. The browser renders each card at 1200×800, and FFmpeg scales it with Lanczos filtering to the required 1800×1200 PNG output.
+**Architecture:** A browser-native HTML compositor combines existing product captures with the FoundPair visual system. The browser renders each card at its native 1280×720 viewport, and FFmpeg scales it with Lanczos filtering onto a cream 1800×1200 canvas without stretching or cropping.
 
 **Tech Stack:** HTML/CSS, browser capture, FFmpeg, FFprobe, shell tests
 
@@ -34,7 +34,7 @@
 - Generated outside Git: `.video-build/gallery/*.jpg`
 - Generated outside Git: `/Users/athifshaffy/Desktop/FoundPair-Devpost-Gallery/*.png`
 
-- [ ] Serve the repository locally and capture cards 01–04 at 1200×800.
+- [ ] Serve the repository locally and capture cards 01–04 at 1280×720.
 - [ ] Scale each capture to 1800×1200 PNG with Lanczos filtering.
 - [ ] Verify dimensions, format, and file size.
 
