@@ -12,8 +12,8 @@ rg -q 'eleven_multilingual_v2' "$RENDERER"
 rg -q 'mp3_44100_128' "$RENDERER"
 rg -q 'FoundPair-Devpost-Demo-ElevenLabs\.mp4' "$RENDERER"
 rg -q 'narration duration .* exceeds scene' "$RENDERER"
-rg -q '04|06' "$RENDERER"
-rg -q 'voice_speed=0.9' "$RENDERER"
+rg -q '03|04|07' "$RENDERER"
+rg -q 'voice_speed=1.17' "$RENDERER"
 rg -q -- '--config -' "$RENDERER"
 if rg -q -- '--header "xi-api-key:' "$RENDERER"; then
   echo "API key must not be expanded into process arguments" >&2

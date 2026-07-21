@@ -49,39 +49,39 @@
     <script>
       const scenes = {
         '01': {
-          heading: 'Find your cofounder',
-          caption: 'Finding a cofounder should not depend on luck, one event,<br>or who already happens to be in your network.',
+          heading: 'A high-stakes founder decision',
+          caption: 'Most tools help founders discover people. They do not clearly explain<br>whether two people are actually ready to build together.',
           card: 'title',
         },
         '02': {
-          heading: 'Explainable matching',
-          caption: 'FoundPair turns skills, values, working style, and practical<br>constraints into transparent, explainable recommendations.',
+          heading: 'Transparent compatibility',
+          caption: 'FoundPair explains why a conversation may be worth having—and<br>what the founders should validate first.',
           image: 'landing-raw.png',
         },
         '03': {
-          heading: 'Start with context',
-          caption: 'A founder describes what they bring, what they need, and how<br>they want to build. Hard dealbreakers are checked before ranking.',
+          heading: 'Start with reviewable context',
+          caption: 'Review skills, values, goals, work style, availability, and practical<br>requirements. Hard conflicts are removed before ranking.',
           image: 'profile-raw.png',
         },
         '04': {
           heading: 'Reasons, not roulette',
-          caption: 'The matching model ranks eligible profiles for skill coverage,<br>values, goals, working style, and logistics.',
+          caption: 'Eligible candidates are ranked across complementary skills, values,<br>goals, working style, and logistics.',
           image: 'results-raw.png',
         },
         '05': {
           heading: 'Compatibility, unpacked',
-          caption: 'Every match explains what could click, surfaces one real point<br>of friction, and suggests questions to test the relationship.',
+          caption: 'Every recommendation shows evidence-based strengths, likely friction,<br>and three practical questions for the first conversation.',
           image: 'detail-raw.png',
         },
         '06': {
           heading: 'Take the next step',
-          caption: 'When a match feels promising, FoundPair creates an editable,<br>profile-grounded introduction and saves it on the device.',
+          caption: 'Create and edit a thoughtful introduction. It is saved locally—<br>no real message is sent, and profile data stays in the browser.',
           image: 'connect-raw.png',
           band: 'top-band',
         },
         '07': {
-          heading: 'Better chemistry starts with better context.',
-          caption: 'FoundPair makes the first cofounder conversation more intentional.<br>The MVP is live now, with verified profiles and mutual introductions next.',
+          heading: 'Human-directed, Codex-accelerated',
+          caption: 'Codex with GPT-5.6 helped us scope the product, implement rules and tests,<br>review privacy boundaries, and harden the complete user journey.',
           card: 'closing',
         },
       };
@@ -102,9 +102,9 @@
         scene.innerHTML = `<section class="card closing-card">
           <span class="orb orb-one"></span><span class="orb orb-two"></span>
           <div class="brand"><span class="mark">FP</span>FoundPair</div>
-          <h1>Better chemistry starts<br>with better context.</h1>
+          <h1>Understand the match<br>before building together.</h1>
           <div class="url">thealphanova.com/founderpair</div>
-          <div class="roadmap"><div><span>MVP</span> · explainable seeded matching</div><div><span>NEXT</span> · verified profiles + mutual introductions</div></div>
+          <div class="roadmap"><div><span>MVP</span> · transparent seeded matching</div><div><span>BUILT WITH</span> · React · TypeScript · Codex · GPT-5.6</div></div>
         </section>${caption}`;
       } else {
         scene.className = data.band || '';

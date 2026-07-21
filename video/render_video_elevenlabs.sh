@@ -52,9 +52,9 @@ while IFS=$'\t' read -r scene_id duration capture heading short_caption; do
     NR == target { gsub(/\n/, " "); print; exit }
   ' "$NARRATION")"
 
-  voice_speed=1.1
+  voice_speed=1.12
   case "$scene_id" in
-    04|06) voice_speed=0.9 ;;
+    03|04|07) voice_speed=1.17 ;;
   esac
 
   request_body="$(jq -n --arg text "$narration_text" --argjson speed "$voice_speed" '{

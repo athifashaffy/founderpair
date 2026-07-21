@@ -1,20 +1,13 @@
-Finding a cofounder should not depend on luck, one event,
-or who already happens to be in your network.
+Choosing a cofounder is one of the most important decisions an early-stage founder will make. But most platforms only help founders discover people. They do not clearly explain whether two people are actually ready to build together.
 
-FoundPair turns skills, values, working style, and practical
-constraints into transparent, explainable recommendations.
+This is FoundPair, a transparent cofounder compatibility tool for idea-stage and pre-seed founders. Instead of showing an unexplained match percentage, FoundPair explains why a conversation may be worth having—and what the founders should validate first.
 
-A founder describes what they bring, what they need, and how
-they want to build. Hard dealbreakers are checked before ranking.
+For this demo, I will use a fictional founder profile. FoundPair structures the founder’s skills, values, goals, working style, availability, and practical requirements into a profile the user can review before matching. FoundPair first removes candidates with hard conflicts, such as incompatible commitment levels, timelines, location requirements, missing role coverage, or different funding expectations.
 
-The matching model ranks eligible profiles for skill coverage,
-values, goals, working style, and logistics.
+It then ranks eligible candidates across five dimensions: complementary skills, values, goals, working style, and logistics. Here is the highest-ranked match. Instead of presenting one black-box score, FoundPair shows the complete breakdown, so the founder can understand what is driving the recommendation. Complementary skills receive the highest weight, followed by values, goals, work style, and logistics.
 
-Every match explains what could click, surfaces one real point
-of friction, and suggests questions to test the relationship.
+Every recommendation includes evidence-based strengths, but it also surfaces a likely friction point. FoundPair does not pretend that a high score guarantees a successful partnership. It gives the founders three practical questions they can use to test the relationship in their first conversation.
 
-When a match feels promising, FoundPair creates an editable,
-profile-grounded introduction and saves it on the device.
+When the founder is ready, they can create and edit a thoughtful introduction. For this hackathon demo, the introduction is saved locally. It does not send a real message, and the founder’s profile data never leaves the browser.
 
-FoundPair makes the first cofounder conversation more intentional.
-The MVP is live now, with verified profiles and mutual introductions next.
+We built FoundPair with React, TypeScript, Codex, and GPT-5.6. Codex with GPT-5.6 helped us scope the product, translate compatibility principles into executable rules, implement the matching workflow, create edge-case tests, review privacy boundaries, and harden the complete user journey. The key product decisions and scoring framework remained human-directed. FoundPair does not try to choose your cofounder for you. It helps you understand who may be worth meeting—and what you need to learn before building together.

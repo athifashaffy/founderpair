@@ -47,7 +47,12 @@ while IFS=$'\t' read -r scene_id duration capture heading short_caption; do
     BEGIN { RS=""; ORS="" }
     NR == target { gsub(/\n/, " "); print; exit }
   ' "$NARRATION")"
-  /usr/bin/say -v Samantha -r 135 -o "$AUDIO_DIR/$scene_id.aiff" -- "$narration_text"
+  /usr/bin/say -v Samantha -r 155 -o "$AUDIO_DIR/$scene_id.aiff" -- "$narration_text"
+  actual_duration="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$AUDIO_DIR/$scene_id.aiff")"
+  if awk -v actual="$actual_duration" -v allowed="$duration" 'BEGIN { exit !(actual > allowed) }'; then
+    printf 'scene %s narration duration %.3fs exceeds scene %ss\n' "$scene_id" "$actual_duration" "$duration" >&2
+    exit 1
+  fi
   ffmpeg -nostdin -y -loglevel error \
     -i "$AUDIO_DIR/$scene_id.aiff" \
     -af "apad=pad_dur=$duration" -t "$duration" -ar 48000 -ac 2 \
@@ -71,6 +76,10 @@ done < "$MANIFEST"
 ffmpeg -nostdin -y -loglevel error \
   -f concat -safe 0 -i "$concat_file" \
   -c copy -movflags +faststart "$OUTPUT_VIDEO"
+
+ffmpeg -nostdin -v error -i "$OUTPUT_VIDEO" -f null -
+test "$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,pix_fmt -of csv=p=0 "$OUTPUT_VIDEO")" = "h264,1920,1080,yuv420p"
+test "$(ffprobe -v error -select_streams a:0 -show_entries stream=codec_name,sample_rate -of csv=p=0 "$OUTPUT_VIDEO")" = "aac,48000"
 
 ffmpeg -nostdin -y -loglevel error \
   -i "$CAPTURE_DIR/landing.png" -frames:v 1 "$OUTPUT_THUMBNAIL"
