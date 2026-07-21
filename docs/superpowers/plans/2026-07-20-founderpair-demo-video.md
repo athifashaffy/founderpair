@@ -4,7 +4,7 @@
 
 **Goal:** Produce a narrated, captioned, Devpost-ready FoundPair demo video and place the verified MP4 on the user's Desktop.
 
-**Architecture:** Capture reproducible 1920×1080 frames from the live HTTPS deployment using the approved demo journey. A small shell-based production pipeline creates system-voice narration, timed captions, branded title cards, Ken Burns-style scene motion, and a final H.264/AAC MP4 with FFmpeg. Text sources and the render script are committed; captures and rendered binaries remain outside Git.
+**Architecture:** Capture reproducible 1920×1080 frames from the live HTTPS deployment using the approved demo journey. A browser compositor creates captioned product frames and branded title cards; a small shell-based production pipeline adds system-voice narration, Ken Burns-style scene motion, and final H.264/AAC encoding with FFmpeg. Text sources and the render script are committed; captures and rendered binaries remain outside Git.
 
 **Tech Stack:** FoundPair live web app, in-app Browser capture, macOS `say` with Samantha voice, FFmpeg 8.1, FFprobe, POSIX shell
 
@@ -27,6 +27,7 @@
 **Files:**
 - Create: `video/narration.txt`
 - Create: `video/scenes.tsv`
+- Create: `video/compositor.html`
 - Create: `video/render_video.sh`
 - Modify: `.gitignore`
 
@@ -70,7 +71,7 @@ id	duration	capture	heading	caption
 07	8	closing.png	Better chemistry starts with better context.	thealphanova.com/founderpair
 ```
 
-Expected total: 72 seconds.
+Expected total: 66 seconds.
 
 - [ ] **Step 4: Implement the render script**
 
@@ -78,9 +79,9 @@ Create `video/render_video.sh` with `set -euo pipefail`. It must:
 
 1. Resolve the repository root and `.video-build` paths without using `$HOME`.
 2. Assert that all seven 1920×1080 PNG files exist.
-3. Generate one AIFF narration file per scene with `/usr/bin/say -v Samantha -r 175`.
+3. Generate one AIFF narration file per scene with `/usr/bin/say -v Samantha -r 135`.
 4. Pad or trim each narration file to its manifest duration.
-5. Create a captioned scene MP4 from each PNG using `zoompan`, `libx264`, `yuv420p`, and `drawtext` with the manifest heading and caption.
+5. Create a scene MP4 from each already-captioned PNG using `zoompan`, `libx264`, and `yuv420p`.
 6. Concatenate the seven scene MP4s and audio tracks.
 7. Write `/Users/athifshaffy/Desktop/FoundPair-Devpost-Demo.mp4` and extract `/Users/athifshaffy/Desktop/FoundPair-Devpost-Thumbnail.png` from the landing scene.
 
@@ -98,11 +99,11 @@ Run:
 
 ```bash
 bash -n video/render_video.sh
-awk -F '\t' 'NR > 1 { total += $2 } END { print total; exit total == 72 ? 0 : 1 }' video/scenes.tsv
+awk -F '\t' 'NR > 1 { total += $2 } END { print total; exit total == 66 ? 0 : 1 }' video/scenes.tsv
 git diff --check
 ```
 
-Expected: shell syntax succeeds, total prints `72`, and the diff check is empty.
+Expected: shell syntax succeeds, total prints `66`, and the diff check is empty.
 
 Commit:
 
@@ -153,7 +154,7 @@ Save each frame at 1920×1080. Do not include browser chrome or other tabs.
 
 - [ ] **Step 3: Create title and closing cards**
 
-Create the title and closing cards as SVG source strings matching the FoundPair palette, then render each to 1920×1080 PNG with FFmpeg. The title card includes the product name and elevator pitch. The closing card includes the live URL and the approved MVP/roadmap labels.
+Use `video/compositor.html` to render the title and closing cards in the FoundPair palette and to combine every live capture with its approved narration caption. Capture each completed scene at 1280×720 and upscale it to 1920×1080 with Lanczos scaling. The title card includes the product name and elevator pitch. The closing card includes the live URL and the approved MVP/roadmap labels.
 
 - [ ] **Step 4: Validate capture dimensions and privacy**
 

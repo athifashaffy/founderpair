@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FoundPair video compositor</title>
+    <style>
+      :root {
+        font-family: Arial, Helvetica, sans-serif;
+        color: #18172a;
+        background: #f7f3ea;
+        --ink: #18172a;
+        --paper: #f7f3ea;
+        --indigo: #5146d9;
+        --indigo-soft: #dedbff;
+        --coral: #ff7a66;
+        --lime: #c9f36a;
+      }
+      * { box-sizing: border-box; }
+      html, body, #scene { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+      #scene { position: relative; background: var(--paper); }
+      .background { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      .caption-band {
+        position: absolute; z-index: 5; right: 0; bottom: 0; left: 0;
+        min-height: 200px; padding: 34px 72px 28px;
+        background: rgba(24, 23, 42, .92); color: white;
+      }
+      .top-band .caption-band { top: 0; bottom: auto; }
+      .caption-band strong { display: block; margin-bottom: 16px; color: var(--lime); font-size: 28px; }
+      .caption-band p { margin: 0; font-size: 26px; font-weight: 600; line-height: 1.35; }
+      .card { position: absolute; inset: 0; padding: 44px 72px; background: var(--paper); }
+      .brand { display: flex; align-items: center; gap: 22px; font-size: 34px; font-weight: 800; }
+      .mark { display: grid; place-items: center; width: 68px; height: 68px; border: 5px solid var(--ink); border-radius: 19px; background: var(--indigo); color: white; box-shadow: 6px 6px 0 var(--ink); transform: rotate(-4deg); }
+      .title-card h1 { max-width: 1050px; margin: 45px 0 25px; font-size: 76px; line-height: .92; letter-spacing: -.06em; }
+      .title-card h1 em { color: var(--indigo); font-style: normal; }
+      .pill { display: inline-block; padding: 13px 22px; border: 4px solid var(--ink); border-radius: 18px; background: var(--lime); font-size: 21px; font-weight: 800; box-shadow: 5px 5px 0 var(--ink); }
+      .orb { position: absolute; border: 5px solid var(--ink); border-radius: 50%; }
+      .orb-one { top: -80px; right: 90px; width: 270px; height: 270px; background: var(--coral); }
+      .orb-two { right: -80px; bottom: 110px; width: 390px; height: 390px; background: var(--indigo-soft); }
+      .closing-card { background: var(--indigo-soft); }
+      .closing-card h1 { max-width: 1000px; margin: 34px 0 22px; font-size: 68px; line-height: .95; letter-spacing: -.055em; }
+      .url { display: inline-block; padding: 14px 25px; border: 5px solid var(--ink); border-radius: 20px; background: white; color: var(--indigo); font-size: 28px; font-weight: 800; box-shadow: 6px 6px 0 var(--ink); }
+      .roadmap { display: grid; gap: 8px; margin-top: 20px; font-size: 20px; font-weight: 800; }
+      .roadmap span { color: var(--indigo); }
+    </style>
+  </head>
+  <body>
+    <main id="scene" aria-label="FoundPair video scene"></main>
+    <script>
+      const scenes = {
+        '01': {
+          heading: 'Find your cofounder',
+          caption: 'Finding a cofounder should not depend on luck, one event,<br>or who already happens to be in your network.',
+          card: 'title',
+        },
+        '02': {
+          heading: 'Explainable matching',
+          caption: 'FoundPair turns skills, values, working style, and practical<br>constraints into transparent, explainable recommendations.',
+          image: 'landing-raw.png',
+        },
+        '03': {
+          heading: 'Start with context',
+          caption: 'A founder describes what they bring, what they need, and how<br>they want to build. Hard dealbreakers are checked before ranking.',
+          image: 'profile-raw.png',
+        },
+        '04': {
+          heading: 'Reasons, not roulette',
+          caption: 'The matching model ranks eligible profiles for skill coverage,<br>values, goals, working style, and logistics.',
+          image: 'results-raw.png',
+        },
+        '05': {
+          heading: 'Compatibility, unpacked',
+          caption: 'Every match explains what could click, surfaces one real point<br>of friction, and suggests questions to test the relationship.',
+          image: 'detail-raw.png',
+        },
+        '06': {
+          heading: 'Take the next step',
+          caption: 'When a match feels promising, FoundPair creates an editable,<br>profile-grounded introduction and saves it on the device.',
+          image: 'connect-raw.png',
+          band: 'top-band',
+        },
+        '07': {
+          heading: 'Better chemistry starts with better context.',
+          caption: 'FoundPair makes the first cofounder conversation more intentional.<br>The MVP is live now, with verified profiles and mutual introductions next.',
+          card: 'closing',
+        },
+      };
+
+      const id = new URLSearchParams(window.location.search).get('scene') || '01';
+      const data = scenes[id];
+      const scene = document.querySelector('#scene');
+
+      const caption = `<section class="caption-band"><strong>${data.heading}</strong><p>${data.caption}</p></section>`;
+      if (data.card === 'title') {
+        scene.innerHTML = `<section class="card title-card">
+          <span class="orb orb-one"></span><span class="orb orb-two"></span>
+          <div class="brand"><span class="mark">FP</span>FoundPair</div>
+          <h1>Find the cofounder<br>who <em>completes</em><br>the picture.</h1>
+          <span class="pill">Explainable matching for serious founders</span>
+        </section>${caption}`;
+      } else if (data.card === 'closing') {
+        scene.innerHTML = `<section class="card closing-card">
+          <span class="orb orb-one"></span><span class="orb orb-two"></span>
+          <div class="brand"><span class="mark">FP</span>FoundPair</div>
+          <h1>Better chemistry starts<br>with better context.</h1>
+          <div class="url">thealphanova.com/founderpair</div>
+          <div class="roadmap"><div><span>MVP</span> · explainable seeded matching</div><div><span>NEXT</span> · verified profiles + mutual introductions</div></div>
+        </section>${caption}`;
+      } else {
+        scene.className = data.band || '';
+        scene.innerHTML = `<img class="background" src="../.video-build/captures/${data.image}" alt="">${caption}`;
+      }
+      document.title = `FoundPair scene ${id} ready`;
+    </script>
+  </body>
+</html>
