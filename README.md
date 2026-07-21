@@ -1,152 +1,297 @@
 # FoundPair
 
-**Find a complementary cofounder with reasons, not roulette.**
+**A transparent cofounder compatibility and first-conversation tool.**
 
-FoundPair helps idea-stage and pre-seed founders decide who is worth a first
-conversation. It filters hard incompatibilities, ranks the remaining people
-with a transparent five-dimension model, and shows the evidence, likely
-friction, and questions behind every recommendation.
+Built with **Codex and GPT-5.6** for **OpenAI Build Week 2026** in the **Work & Productivity** track.
 
-[Try the live demo](https://thealphanova.com/founderpair/) ·
-[Read the product specification](docs/superpowers/specs/2026-07-20-founderpair-product-requirements-design.md) ·
-[Follow the implementation plan](docs/superpowers/plans/2026-07-20-founderpair-mvp.md)
+[Try the live demo](https://thealphanova.com/founderpair/) · [Product specification](docs/superpowers/specs/2026-07-20-founderpair-product-requirements-design.md) · [Implementation plan](docs/superpowers/plans/2026-07-20-founderpair-mvp.md)
 
-## The 60-second judge path
+## What FoundPair does
+
+Finding a cofounder is not only a résumé search. Two people may have complementary skills but still be incompatible on commitment, timeline, funding expectations, working style, or location.
+
+FoundPair helps idea-stage and pre-seed founders decide **who is worth a first conversation and what they should validate before committing**.
+
+The MVP lets a founder:
+
+1. create a reviewable founder profile;
+2. filter candidates with hard incompatibilities;
+3. rank eligible candidates across five transparent dimensions;
+4. inspect the evidence, strengths, and likely friction behind each match;
+5. receive practical first-conversation questions; and
+6. create and locally save an editable introduction.
+
+FoundPair is a decision-support prototype. It does not predict whether two people will build a successful company.
+
+## 60-second judge path
 
 No account, API key, or installation is required.
 
 1. Open the [live demo](https://thealphanova.com/founderpair/).
 2. Select **Try the demo profile**.
-3. Open the first match and expand **Show scoring details**.
-4. Compare the strengths with the potential friction and first-conversation
-   questions.
-5. Select **Start a conversation**, edit the introduction, and save it locally.
+3. Open the first recommended match.
+4. Expand **Show scoring details**.
+5. Compare the match evidence, potential friction, and first-conversation questions.
+6. Select **Start a conversation**, edit the introduction, and save it locally.
 
-The demo uses a clearly labeled seeded cohort. Nothing is sent to another
-person and profile content never leaves the browser.
+The demo uses a clearly labeled fictional founder cohort. Saving an introduction does not send a real message.
 
-## Why FoundPair
-
-Finding a cofounder is not a résumé search. Complementary skills matter, but so
-do commitment, values, funding expectations, working style, and logistics.
-Most discovery products either optimize for similarity or present an opaque
-compatibility number. FoundPair makes a narrower, more honest promise: help a
-founder identify a promising conversation and understand what to validate
-before committing.
-
-The complete MVP journey is:
+## Core workflow
 
 ```text
-founder story → reviewable profile → hard-constraint filter
-              → five-dimension ranking → evidence + friction
-              → first-conversation questions → editable introduction
+Founder story
+    ↓
+Reviewable structured profile
+    ↓
+Hard-constraint filtering
+    ↓
+Five-dimension compatibility ranking
+    ↓
+Evidence, strengths, and potential friction
+    ↓
+First-conversation questions
+    ↓
+Editable introduction
 ```
 
 ## What is implemented
 
-- A responsive two-step founder profile with validation and draft recovery.
-- Reviewable structuring of free text into matching attributes.
-- Nine realistic seeded founder profiles across roles and time zones.
-- Explicit dealbreakers for commitment, timeline, location, role coverage,
-  and funding direction.
-- Reproducible ranking across complementarity, values, goals, work style, and
-  logistics.
-- Grounded explanations that cite profile evidence and always surface a
-  potential friction point.
-- Three practical questions for a first cofounder conversation.
-- An editable introduction with honest, device-local save confirmation.
-- Unit and journey tests covering scoring, filtering, persistence, and the
-  end-to-end product path.
+- Responsive two-step founder profile with validation.
+- Local draft recovery for unfinished profiles.
+- Reviewable conversion of founder answers into matching attributes.
+- Nine fictional founder profiles across roles, industries, and time zones.
+- Explicit dealbreakers for:
+  - commitment level;
+  - startup timeline;
+  - location requirements;
+  - missing role coverage; and
+  - funding direction.
+- Reproducible compatibility ranking.
+- Match explanations grounded in profile data.
+- A required potential-friction section for every recommendation.
+- Three tailored questions for the first cofounder conversation.
+- Editable introduction with device-local save confirmation.
+- Automated tests for scoring, filtering, persistence, and the end-to-end journey.
+- Public, installation-free demo.
 
-## Technical design
+## Matching model
 
-FoundPair is a static React 19 + TypeScript 6 application built with Vite. Pure
-domain modules own eligibility, scoring, ranking, and explanations, which
-makes the core behavior deterministic and directly testable.
-
-Eligible profiles receive a score from 0 to 100:
+Hard incompatibilities are checked before scoring. Eligible profiles receive a score from 0 to 100:
 
 ```text
-score = 30% complementarity
-      + 25% values
-      + 20% goals
-      + 15% work style
-      + 10% logistics
+30%  complementary skills
+25%  values alignment
+20%  goals and startup direction
+15%  working-style compatibility
+10%  logistics
 ```
 
-Candidates below 50 are not recommended. The UI presents broad bands—Strong
-fit, Promising fit, and Worth exploring—because false precision would be
-misleading. Every explanation is assembled from the two profiles and computed
-scores; unsupported personality or demographic claims are not permitted.
+Candidates below the recommendation threshold are not presented as matches.
+
+The interface uses broad labels such as **Strong fit**, **Promising fit**, and **Worth exploring** rather than pretending that a numerical score can precisely predict human compatibility.
+
+Every explanation must be supported by profile evidence. The product does not infer protected characteristics, mental-health conditions, or hidden personality traits.
 
 ## How Codex and GPT-5.6 were used
 
-FoundPair was built during OpenAI Build Week on July 20, 2026. The dated commit
-history records the progression from product definition to tested MVP,
-hardening, and deployment.
+FoundPair was developed in a Codex project thread using GPT-5.6 during OpenAI Build Week. The primary `/feedback` Session ID is supplied in the Devpost submission form.
 
-Codex accelerated the work by:
+### Where Codex accelerated the work
 
-- turning the product brief into a scoped PRD and implementation plan;
-- scaffolding the React and TypeScript application;
-- implementing and testing eligibility, scoring, ranking, and persistence as
-  small domain modules;
-- iterating on the responsive interaction design and the full
-  landing-to-introduction journey;
-- reviewing privacy boundaries, failure states, and misleading product claims;
-- preparing deployment assets and verifying the production build; and
-- using GPT-5.6 Sol for the final rules audit, repository documentation,
-  judge-oriented testing path, and demo narrative.
+Codex helped the team:
 
-The key product and engineering decisions remained human-directed: choose a
-focused decision-support tool instead of a social network, prioritize
-complementarity over superficial similarity, filter dealbreakers before
-ranking, show friction as well as strengths, and keep sensitive profile data
-on-device for the MVP.
+- turn the initial product idea into a scoped PRD and implementation plan;
+- scaffold the React and TypeScript application;
+- implement eligibility, scoring, ranking, explanation, and persistence modules;
+- build the complete landing-to-introduction user journey;
+- create unit and journey tests;
+- identify edge cases and failure states;
+- review privacy boundaries and misleading product claims;
+- prepare the production build and deployment configuration; and
+- improve repository documentation and the judge testing path.
 
-GPT-5.6 is used at build time through Codex, not as a hidden runtime dependency.
-The shipped browser app intentionally makes no OpenAI API request. This keeps
-the public demo free to test, avoids exposing an API key, and preserves the
-product's privacy promise. A remote generative explanation service remains a
-post-hackathon option only after opt-in, authentication, evidence validation,
-rate limits, and spend controls exist.
+### How GPT-5.6 contributed to the final result
+
+GPT-5.6 was used throughout the Codex development workflow to:
+
+- reason about which founder attributes should become hard constraints versus scored preferences;
+- convert the product concept into a transparent, testable compatibility model;
+- stress-test the model against contradictory profiles and edge cases;
+- identify where generated explanations could make unsupported claims;
+- propose validation and safety rules;
+- review the implementation against the hackathon requirements; and
+- refine the judge-facing demo flow and product narrative.
+
+### Runtime implementation note
+
+The submitted public demo does **not** make an OpenAI API request at runtime.
+
+This is a deliberate MVP design decision:
+
+- judges can reproduce the same score from the same inputs;
+- no API key is exposed in a public browser application;
+- founder profile data remains on the device; and
+- the demo can be tested freely without authentication, credits, or rate limits.
+
+GPT-5.6 materially contributed to the product through the Codex build, reasoning, validation, testing, and review process. The runtime matching engine is deterministic and inspectable rather than an opaque model-generated score.
+
+## Human-directed decisions
+
+The following product and engineering decisions were made by the team, not delegated to Codex:
+
+- focus on compatibility validation instead of building another social network;
+- prioritize complementary abilities over superficial similarity;
+- filter clear dealbreakers before ranking candidates;
+- use the five matching dimensions and their weights;
+- require every recommendation to show both strengths and friction;
+- avoid unsupported psychological or demographic inference;
+- keep all profile data on-device for the hackathon MVP;
+- use fictional candidates rather than presenting a fake live marketplace; and
+- limit the product promise to identifying a worthwhile conversation.
+
+## What was built during Build Week
+
+At the beginning of the Build Week implementation, the repository contained product-definition material but no runnable application.
+
+During the hackathon, the team added:
+
+- the complete React and TypeScript frontend;
+- founder-profile creation and validation;
+- seeded demo data;
+- eligibility and dealbreaker logic;
+- compatibility scoring and ranking;
+- evidence-based match explanations;
+- first-conversation questions;
+- editable introductions;
+- browser persistence;
+- automated tests;
+- production deployment; and
+- judge-facing setup and testing documentation.
+
+Evidence is available through the dated commit history, the [product specification](docs/superpowers/specs/2026-07-20-founderpair-product-requirements-design.md), and the [implementation plan](docs/superpowers/plans/2026-07-20-founderpair-mvp.md).
+
+## Technical architecture
+
+FoundPair is a static web application built with:
+
+- React 19
+- TypeScript 6
+- Vite 8
+- Vitest
+- Testing Library
+- ESLint
+
+The application separates concerns into:
+
+- reusable interface components;
+- fictional demo data;
+- pure domain logic for eligibility, scoring, ranking, and explanations; and
+- browser-storage services.
+
+The core matching logic is kept in pure TypeScript modules so it is deterministic, directly testable, and independent of the interface.
+
+No backend, database, authentication service, or OpenAI API key is required for the submitted MVP.
 
 ## Run locally
 
-Requirements: Node.js 20.19 or newer and npm 10 or newer.
+### Requirements
+
+- Node.js 20.19 or newer
+- npm 10 or newer
+
+### Installation
 
 ```bash
 git clone https://github.com/athifashaffy/founderpair.git
 cd founderpair
 npm ci
+```
+
+### Start the development server
+
+```bash
 npm run dev -- --host 127.0.0.1
 ```
 
-Open `http://127.0.0.1:5173/founderpair/`.
+Open:
 
-Run the complete verification suite:
+```text
+http://127.0.0.1:5173/founderpair/
+```
+
+### Run verification
 
 ```bash
 npm test
-npm run build
 npm run lint
+npm run build
 ```
 
-The production build is written to `dist/` with asset URLs rooted at
-`/founderpair/`.
+The production build is written to `dist/`.
 
-## Privacy and demo boundaries
+## Manual testing
 
-- Profiles, in-progress edits, and introduction drafts use versioned browser
-  local storage.
+### Test the seeded judge journey
+
+1. Open the app.
+2. Select **Try the demo profile**.
+3. Confirm that compatible founders are ranked.
+4. Open the first result.
+5. Confirm that the detail page shows:
+   - scoring dimensions;
+   - evidence-based strengths;
+   - at least one potential friction point; and
+   - three first-conversation questions.
+6. Create an introduction and save it.
+7. Refresh the page and confirm that local progress is retained where expected.
+
+### Test a custom profile
+
+1. Return to the landing page.
+2. Create a founder profile.
+3. Complete the required fields.
+4. Review the structured profile before continuing.
+5. Confirm that candidates who violate hard constraints are excluded.
+6. Confirm that the remaining candidates are ranked and explained.
+
+## Privacy and safety boundaries
+
+- Founder profiles and saved drafts remain in browser local storage.
 - No profile-processing network request is made.
-- Seeded profiles are fictional demo data, not a live founder network.
-- Saving an introduction does not send a message.
-- A match is decision support, not a prediction of relationship or company
-  success.
+- The seeded founder profiles are fictional demo data.
+- Saving an introduction does not contact another person.
+- A compatibility score is not a prediction of relationship or company success.
+- The product avoids protected-characteristic and psychological inference.
+- Users are encouraged to verify claims through real conversations and trial collaboration.
 
-Authentication, verified profiles, mutual interest, messaging, and
-outcome-based evaluation are deliberately outside this hackathon MVP.
+## Known limitations
+
+This hackathon MVP is not a live founder marketplace.
+
+It does not currently include:
+
+- account creation or identity verification;
+- real founder profiles;
+- mutual-interest matching;
+- messaging or notifications;
+- reference or background checks;
+- collaboration-outcome tracking;
+- adaptive scoring based on real-world results; or
+- runtime GPT-5.6 profile interpretation and generative analysis.
+
+The current weights and thresholds are an inspectable prototype, not a scientifically validated measure of cofounder success.
+
+## Future direction
+
+With informed consent and appropriate privacy controls, a future version could use GPT-5.6 at runtime to:
+
+- structure longer free-text founder stories;
+- generate evidence-grounded compatibility explanations;
+- create personalized interview questions;
+- simulate likely areas of disagreement; and
+- generate a structured 21-day trial-collaboration plan.
+
+Those features are not claimed as part of the submitted MVP.
 
 ## License
 
