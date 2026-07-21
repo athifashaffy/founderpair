@@ -54,22 +54,23 @@
       .screen {
         position: absolute;
         z-index: 2;
-        right: 80px;
-        bottom: 28px;
-        left: 80px;
-        height: 452px;
+        bottom: 15px;
+        left: 50%;
+        width: 889px;
+        height: 500px;
+        transform: translateX(-50%);
         overflow: hidden;
         border: 5px solid var(--ink);
         border-radius: 22px;
         background: white;
         box-shadow: 10px 10px 0 var(--ink);
       }
-      .screen img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+      .screen img { width: 100%; height: 100%; object-fit: contain; object-position: center; }
       .number {
         position: absolute;
         z-index: 4;
-        right: 102px;
-        bottom: 49px;
+        right: 200px;
+        bottom: 41px;
         padding: 10px 15px;
         border: 3px solid var(--ink);
         border-radius: 14px;
@@ -98,8 +99,8 @@
           badge: '#dedbff',
         },
         '03': {
-          title: 'Ranked for real compatibility',
-          caption: 'Strong, promising, and exploratory fits—each with reasons you can inspect.',
+          title: 'Ranked by transparent compatibility signals',
+          caption: 'A realistic seeded demo cohort shows strong, promising, and exploratory fits.',
           image: 'results-raw.png',
           accent: '#dedbff',
           badge: '#ff7a66',
