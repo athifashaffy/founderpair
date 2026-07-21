@@ -10,12 +10,15 @@ BUILD_DIR="$REPO_ROOT/.video-build/elevenlabs"
 CAPTURE_DIR="$REPO_ROOT/.video-build/captures"
 SCENE_DIR="$BUILD_DIR/scenes"
 AUDIO_DIR="$BUILD_DIR/audio"
+REQUEST_DIR="$BUILD_DIR/requests"
 MANIFEST="$REPO_ROOT/video/scenes.tsv"
 NARRATION="$REPO_ROOT/video/narration.txt"
 OUTPUT_VIDEO="/Users/athifshaffy/Desktop/FoundPair-Devpost-Demo-ElevenLabs.mp4"
 OUTPUT_THUMBNAIL="/Users/athifshaffy/Desktop/FoundPair-Devpost-Thumbnail-ElevenLabs.png"
+OUTPUT_VIDEO_PART="/Users/athifshaffy/Desktop/.FoundPair-Devpost-Demo-ElevenLabs.part.mp4"
+OUTPUT_THUMBNAIL_PART="/Users/athifshaffy/Desktop/.FoundPair-Devpost-Thumbnail-ElevenLabs.part.png"
 
-mkdir -p "$SCENE_DIR" "$AUDIO_DIR"
+mkdir -p "$SCENE_DIR" "$AUDIO_DIR" "$REQUEST_DIR"
 
 for dependency in curl ffmpeg ffprobe jq awk; do
   command -v "$dependency" >/dev/null
@@ -37,6 +40,7 @@ while IFS=$'\t' read -r scene_id duration capture heading short_caption; do
   capture_path="$CAPTURE_DIR/$capture"
   mp3_path="$AUDIO_DIR/$scene_id.mp3"
   mp3_part_path="$mp3_path.part"
+  request_path="$REQUEST_DIR/$scene_id.json"
   wav_path="$AUDIO_DIR/$scene_id.wav"
   scene_path="$SCENE_DIR/$scene_id.mp4"
 
@@ -64,14 +68,16 @@ while IFS=$'\t' read -r scene_id duration capture heading short_caption; do
       speed: $speed
     }
   }')"
+  printf '%s' "$request_body" > "$request_path"
 
-  curl --fail-with-body --silent --show-error --retry 3 --retry-all-errors --retry-delay 1 \
+  printf 'header = "xi-api-key: %s"\n' "$ELEVENLABS_API_KEY" | curl \
+    --config - \
+    --fail-with-body --silent --show-error \
     --request POST \
     --url "https://api.elevenlabs.io/v1/text-to-speech/$ELEVENLABS_VOICE_ID?output_format=mp3_44100_128" \
     --header "Accept: audio/mpeg" \
     --header "Content-Type: application/json" \
-    --header "xi-api-key: $ELEVENLABS_API_KEY" \
-    --data-binary "$request_body" \
+    --data-binary "@$request_path" \
     --output "$mp3_part_path"
 
   actual_duration="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$mp3_part_path")"
@@ -99,9 +105,16 @@ done < "$MANIFEST"
 
 ffmpeg -nostdin -y -loglevel error \
   -f concat -safe 0 -i "$concat_file" \
-  -c copy -movflags +faststart "$OUTPUT_VIDEO"
+  -c copy -movflags +faststart "$OUTPUT_VIDEO_PART"
+
+ffmpeg -nostdin -v error -i "$OUTPUT_VIDEO_PART" -f null -
+test "$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,pix_fmt -of csv=p=0 "$OUTPUT_VIDEO_PART")" = "h264,1920,1080,yuv420p"
+test "$(ffprobe -v error -select_streams a:0 -show_entries stream=codec_name,sample_rate -of csv=p=0 "$OUTPUT_VIDEO_PART")" = "aac,48000"
+mv -- "$OUTPUT_VIDEO_PART" "$OUTPUT_VIDEO"
 
 ffmpeg -nostdin -y -loglevel error \
-  -i "$CAPTURE_DIR/landing.png" -frames:v 1 "$OUTPUT_THUMBNAIL"
+  -i "$CAPTURE_DIR/landing.png" -frames:v 1 "$OUTPUT_THUMBNAIL_PART"
+test "$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$OUTPUT_THUMBNAIL_PART")" = "1920x1080"
+mv -- "$OUTPUT_THUMBNAIL_PART" "$OUTPUT_THUMBNAIL"
 
 printf '%s\n%s\n' "$OUTPUT_VIDEO" "$OUTPUT_THUMBNAIL"

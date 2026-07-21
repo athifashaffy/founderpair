@@ -14,12 +14,23 @@ rg -q 'FoundPair-Devpost-Demo-ElevenLabs\.mp4' "$RENDERER"
 rg -q 'narration duration .* exceeds scene' "$RENDERER"
 rg -q '04|06' "$RENDERER"
 rg -q 'voice_speed=0.9' "$RENDERER"
-rg -q -- '--retry 3' "$RENDERER"
-rg -q -- '--retry-all-errors' "$RENDERER"
+rg -q -- '--config -' "$RENDERER"
+if rg -q -- '--header "xi-api-key:' "$RENDERER"; then
+  echo "API key must not be expanded into process arguments" >&2
+  exit 1
+fi
+if rg -q -- '--retry' "$RENDERER"; then
+  echo "paid TTS requests must not be retried automatically" >&2
+  exit 1
+fi
 rg -q 'mp3_part_path=' "$RENDERER"
 rg -q 'mv -- "\$mp3_part_path" "\$mp3_path"' "$RENDERER"
+rg -q 'OUTPUT_VIDEO_PART=' "$RENDERER"
+rg -q 'OUTPUT_THUMBNAIL_PART=' "$RENDERER"
+rg -q 'mv -- "\$OUTPUT_VIDEO_PART" "\$OUTPUT_VIDEO"' "$RENDERER"
+rg -q 'mv -- "\$OUTPUT_THUMBNAIL_PART" "\$OUTPUT_THUMBNAIL"' "$RENDERER"
 rg -q 'done < "\$MANIFEST"' "$RENDERER"
-test "$(rg -c -- '-nostdin' "$RENDERER")" = "4"
+test "$(rg -c -- '-nostdin' "$RENDERER")" = "5"
 
 if rg -q 'sk_[A-Za-z0-9]+' "$RENDERER"; then
   echo "renderer must not contain an API key" >&2
