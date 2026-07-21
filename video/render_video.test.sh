@@ -22,5 +22,8 @@ if rg -q 'drawtext|drawbox|FONT_BOLD|FONT_REGULAR' "$RENDERER"; then
 fi
 
 test "$(rg -c -- '-nostdin' "$RENDERER")" = "4"
+test "$(awk -F '\t' 'NR > 1 { total += $2 } END { print total }' "$REPO_ROOT/video/scenes.tsv")" = "61"
+test "$(awk -F '\t' '$1 == "03" { print $2 }' "$REPO_ROOT/video/scenes.tsv")" = "8"
+test "$(awk -F '\t' '$1 == "05" { print $2 }' "$REPO_ROOT/video/scenes.tsv")" = "8"
 
 bash -n "$RENDERER"

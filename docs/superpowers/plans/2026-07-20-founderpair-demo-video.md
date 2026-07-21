@@ -64,14 +64,14 @@ Create `video/scenes.tsv` with tab-separated columns:
 id	duration	capture	heading	caption
 01	7	title.png	Find your cofounder	Finding a cofounder should not depend on luck.
 02	9	landing.png	Explainable matching	Skills, values, working style, and practical constraints.
-03	12	profile.png	Start with context	Dealbreakers are checked before ranking.
-04	12	results.png	Reasons, not roulette	Transparent, deterministic match bands.
-05	15	detail.png	Compatibility, unpacked	Strengths, friction, and first-conversation questions.
+03	8	profile.png	Start with context	Dealbreakers are checked before ranking.
+04	10	results.png	Reasons, not roulette	Transparent, deterministic match bands.
+05	8	detail.png	Compatibility, unpacked	Strengths, friction, and first-conversation questions.
 06	9	connect.png	Take the next step	Editable and saved privately on this device.
-07	8	closing.png	Better chemistry starts with better context.	thealphanova.com/founderpair
+07	10	closing.png	Better chemistry starts with better context.	thealphanova.com/founderpair
 ```
 
-Expected total: 66 seconds.
+Expected total: 61 seconds.
 
 - [ ] **Step 4: Implement the render script**
 
@@ -99,11 +99,11 @@ Run:
 
 ```bash
 bash -n video/render_video.sh
-awk -F '\t' 'NR > 1 { total += $2 } END { print total; exit total == 66 ? 0 : 1 }' video/scenes.tsv
+awk -F '\t' 'NR > 1 { total += $2 } END { print total; exit total == 61 ? 0 : 1 }' video/scenes.tsv
 git diff --check
 ```
 
-Expected: shell syntax succeeds, total prints `66`, and the diff check is empty.
+Expected: shell syntax succeeds, total prints `61`, and the diff check is empty.
 
 Commit:
 
@@ -161,10 +161,12 @@ Use `video/compositor.html` to render the title and closing cards in the FoundPa
 Run:
 
 ```bash
-for file in .video-build/captures/*.png; do
+while IFS=$'\t' read -r id duration capture heading caption; do
+  test "$id" = "id" && continue
+  file=".video-build/captures/$capture"
   test "$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$file")" = "1920x1080"
-done
-test "$(find .video-build/captures -name '*.png' | wc -l | tr -d ' ')" = "7"
+done < video/scenes.tsv
+test "$(awk -F '\t' 'NR > 1 { count += 1 } END { print count }' video/scenes.tsv)" = "7"
 ```
 
 Expected: all dimension checks succeed and the count is `7`.
