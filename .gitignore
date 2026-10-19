@@ -5,4 +5,3 @@ dist/
 .video-build/
 !.env.example
 *.log
-config.bat
